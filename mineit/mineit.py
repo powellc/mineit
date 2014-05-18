@@ -1,21 +1,17 @@
-"""Usage:
-    mineit <servername> create <port> [--memory=<memory>] [--motd=<motd>] [--version=<version>]
+"""MineIt.
+
+Usage:
+    mineit create <servername> [--port=<port>] [--memory=<memory>] [--motd=<motd>] [--version=<version>]
     mineit <servername> set <option> <value>
-    mineit <serveranme> delete
-    mineit (-h | --help | --version)
-    """
+    mineit delete <serveranme>
+    mineit list
+"""
 
 import os
 from pwd import getpwnam
 from grp import getgrnam
 from shutil import copy, rmtree
 from docopt import docopt
-
-version = '0.1.0'
-
-if __name__ == '__main__':
-    args = docopt(__doc__)
-    main(args)
 
 
 LATEST_RELEASE = '1.7.9'
@@ -33,9 +29,22 @@ SCONF = ("[program:{0}]\n"
          "stopsignal=QUIT\n")
 
 
-def main(args):
+def main(args=None):
     """Here we hand off for the various cli functions"""
-    print(args)
+    if not args:
+        args = docopt(__doc__, version="xxxx")
+    print args
+    print args['<servername>']
+    if args['create']:
+        create_server(args['<servername>'])
+    if args['delete']:
+        delete_server(args['<servername>'])
+
+
+
+if __name__ == '__main__':
+    args = docopt(__doc__)
+    main(args)
 
 
 def create_server(name, memory=None, motd=None, version=None):
