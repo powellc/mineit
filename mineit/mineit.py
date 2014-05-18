@@ -2,8 +2,8 @@
 
 Usage:
     mineit create <servername> [--port=<port>] [--memory=<memory>] [--motd=<motd>] [--version=<version>]
-    mineit <servername> set <option> <value>
-    mineit delete <serveranme>
+    mineit set <servername> <option> <value>
+    mineit delete <servername>
     mineit list
 """
 
@@ -33,10 +33,8 @@ def main(args=None):
     """Here we hand off for the various cli functions"""
     if not args:
         args = docopt(__doc__, version="xxxx")
-    print args
-    print args['<servername>']
     if args['create']:
-        create_server(args['<servername>'])
+        create_server(args['<servername>'], port=args['--port'])
     if args['delete']:
         delete_server(args['<servername>'])
 
@@ -47,7 +45,7 @@ if __name__ == '__main__':
     main(args)
 
 
-def create_server(name, memory=None, motd=None, version=None):
+def create_server(name, port=None, memory=None, motd=None, version=None):
     """
     Create a new minecraft server.
 
@@ -85,6 +83,11 @@ def create_server(name, memory=None, motd=None, version=None):
     except IOError:
         pass
     os.system('supervisorctl update')
+
+    if port:
+        os.system('sudo -u minecraft sed -e "s/^server-port=/server-port={0}/g" {1}'.format(
+            port, folder + '/server.properites'))
+
     os.system('supervisorctl restart {0}'.format(name))
 
 
